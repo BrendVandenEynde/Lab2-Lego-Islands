@@ -75,9 +75,10 @@ export default class World {
 
   getCoordinates() {
     let randomSign = Math.random() < 0.5 ? -1 : 1;
+    // Ensure islands spawn inside the visible area of the screen
     return {
-      x: ((Math.random() * window.innerWidth) / 2) * randomSign,
-      y: ((Math.random() * window.innerHeight) / 2) * randomSign,
+      x: Math.max(0, Math.min((Math.random() * window.innerWidth) / 2, window.innerWidth - 100)),
+      y: Math.max(0, Math.min((Math.random() * window.innerHeight) / 2, window.innerHeight - 50)),
     };
   }
 
@@ -103,6 +104,12 @@ export default class World {
     island.islandElement = islandElement;
 
     console.log('Island added!');
+
+    // Trigger the animation by moving the island to its random location
+    setTimeout(() => {
+      const randomCoordinates = this.getCoordinates();
+      this.moveIsland(island, randomCoordinates);
+    }, 100);
   }
 
   removeIsland(island, islandElement) {
@@ -122,7 +129,13 @@ export default class World {
     }, 300);
   }
 
-  moveIsland(island) {
-    // Placeholder for animation logic
+  moveIsland(island, coordinates) {
+    island.islandElement.style.transition = 'transform 0.5s ease-in-out'; // Set the transition properties
+    island.islandElement.style.transform = `translate(${coordinates.x}px, ${coordinates.y}px)`; // Move the island to the new coordinates
+
+    // Remove the transition property after the animation completes
+    setTimeout(() => {
+      island.islandElement.style.transition = '';
+    }, 500);
   }
 }
