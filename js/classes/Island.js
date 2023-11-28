@@ -24,7 +24,17 @@ export default class Island {
         "Sunny island",
         "Tropical island",
         "Palm island",
-        "Paradise island"
+        "Paradise island",
+        "Coral Cove",
+        "Azure Oasis",
+        "Tropicana Haven",
+        "Serene Shores",
+        "Mango Mirage",
+        "Golden Lagoon",
+        "Isle of Tranquility",
+        "Emerald Eden",
+        "Sunset Sanctuary",
+        "Coconut Bliss Cove"
       ];
   
       // // return a random name from the array
