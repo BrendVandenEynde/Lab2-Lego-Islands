@@ -4,11 +4,12 @@ export default class World {
   constructor() {
     this.islands = [];
     this.hookEvents();
+    this.boundAddIslandOnce = this.addIslandOnce.bind(this); // Bind the function to the current instance
   }
 
   hookEvents() {
     const btnAddIsland = document.getElementById('btnAddIsland');
-    btnAddIsland.addEventListener('click', () => this.addIslandOnce());
+    btnAddIsland.addEventListener('click', this.boundAddIslandOnce);
 
     const btnSave = document.getElementById('btnSave');
     btnSave.addEventListener('click', () => this.save());
@@ -19,11 +20,11 @@ export default class World {
 
   addIslandOnce() {
     const btnAddIsland = document.getElementById('btnAddIsland');
-    btnAddIsland.removeEventListener('click', () => this.addIslandOnce());
+    btnAddIsland.removeEventListener('click', this.boundAddIslandOnce);
 
     this.addIsland();
 
-    btnAddIsland.addEventListener('click', () => this.addIslandOnce());
+    btnAddIsland.addEventListener('click', this.boundAddIslandOnce);
   }
 
   save() {
