@@ -35,46 +35,51 @@ export default class World {
     }
   
     addIsland() {
+      // Add islands to the DOM
 
-      // add the islands to the DOM
-      // 1. Add the island to the internal islands array.
-      //this.islands.push(island); //Dit zorgt ervoor dat er een nieuw eiland gepushed wordt en islands houdt rekening met hoeveel eilanden er al zijn. this.islands.push(island) zorgt ervoor dat het nieuwe eiland in de array terecht komt.
+      // 1. Add the island to the internal islands array
+      const island = new Island(); // Create a new Island instance
+      this.islands.push(island);
 
-      // 2. Get the coordinates for placing the island on the screen.
-      //
-
-      // 3. Create a new DOM element for the island.
-      // 
-      //islandElement.className = 'island'; // Set the CSS class of islandElement to 'island'. This class will be used for styling the island element in your CSS file.
-     // islandElement.textContent = island.name; // Display the island's name on the element
-
-      // 4. Set the island's position using CSS.
-      
-      //islandElement.style.backgroundColor = island.color; // Set the island's color
-
-      // 5. Append the island element to the 'app' container in your HTML.
-      //const appContainer = document.getElementById('app'); // Maakt een nieuw eiland aan in de div met de ID "app", hier worden de nieuwe eilanden ingezet.
-      //appContainer.appendChild(islandElement); // Append the islandElement as a child to the appContainer element in the DOM. This places the island element inside the 'app' div, making it visible on the web page.
-
-      const islandElement = document.createElement('div'); // er wordt een nieuwe div aangemaakt, deze div is eigenlijk je eiland dat visueel op het scherm komt.
+      // 2. Create a new DOM element for the island
+      const islandElement = document.createElement('div');
       islandElement.classList.add("island");
-      document.body.appendChild(islandElement); 
-      const coordinates = this.getCoordinates(); // De functie getCoordinates gaat ervoor zorgen dat er willekeurige coordinaten gegenereerd worden op het scherm.
-      islandElement.style.left = coordinates.x + 'px'; // zorgt voor de coordinaten op de X as, het begint te tellen vanaf de linkerkant van het scherm.
-      islandElement.style.top = coordinates.y + 'px'; // zorgt voor de coordinaten op de Y as, het begint te tellen vanaf de bovenkant van het scherm.
+      document.body.appendChild(islandElement);
 
-      // set the coordiantes as a transform property
-         islandElement.style.transform = `translate(${coordinates.x}px, ${coordinates.y}px)`;
+      // 3. Set the island's position using CSS
+      const coordinates = this.getCoordinates();
+      islandElement.style.left = coordinates.x + 'px';
+      islandElement.style.top = coordinates.y + 'px';
 
-      const island = new Island();
+      // 4. Set the coordinates as a transform property
+      islandElement.style.transform = `translate(${coordinates.x}px, ${coordinates.y}px)`;
+
+      // 5. Set the island's color
       islandElement.style.backgroundColor = island.getRandomColor();
 
-      // give the new island a random name
+      // 6. Set the island's name
       islandElement.innerHTML = island.getRandomName();
 
-      console.log("test2");
+      // 7. Add a click event listener to remove the island when clicked
+      islandElement.addEventListener('click', () => {
+          this.removeIsland(island, islandElement);
+      });
 
-    }
+      console.log("Island added!");
+  }
+
+  removeIsland(island, islandElement) {
+      // Remove the island from the internal islands array
+      const index = this.islands.indexOf(island);
+      if (index !== -1) {
+          this.islands.splice(index, 1);
+      }
+
+      // Remove the island element from the DOM
+      document.body.removeChild(islandElement);
+
+      console.log("Island removed!");
+  }
   
     moveIsland(island) {
       // this might be a good point to animate the islands with JS Animations API
