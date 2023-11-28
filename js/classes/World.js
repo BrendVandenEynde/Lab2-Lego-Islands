@@ -106,14 +106,20 @@ export default class World {
   }
 
   removeIsland(island, islandElement) {
-    const index = this.islands.indexOf(island);
-    if (index !== -1) {
-      this.islands.splice(index, 1);
-    }
+    islandElement.style.transition = 'transform 0.3s ease-out'; // Set the transition properties
+    islandElement.style.transform = 'translateY(-20px)'; // Move the island slightly upward
 
-    document.body.removeChild(islandElement);
+    // Remove the island after the animation completes
+    setTimeout(() => {
+      const index = this.islands.indexOf(island);
+      if (index !== -1) {
+        this.islands.splice(index, 1);
+      }
 
-    console.log('Island removed!');
+      document.body.removeChild(islandElement);
+
+      console.log('Island removed!');
+    }, 300);
   }
 
   moveIsland(island) {
