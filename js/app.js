@@ -1,45 +1,28 @@
-// kickstart your world here
+// Import the World and Island classes from their respective modules
+import World from './classes/World.js';
+import Island from './classes/Island.js';
 
-
-import World from './classes/World.js'; // World.js classe importeren.
- import Island from './classes/Island.js'; // Import the Island class
-
+// Create a new instance of the World class
 const world = new World();
 
-//  document.addEventListener('DOMContentLoaded', function() { // Wanneer de DOM volledig geladen is, wordt er een nieuwe instantie aangemaakt van de wereld class die luistert naar het hook event.
-//     const world = new World(); // Nieuwe World aanmaken
-//     const btnAddIsland = document.getElementById('btnAddIsland'); // Get the "Add Island" button
-//     btnAddIsland.addEventListener('click', () => { // Add a click event listener to the button
-//         const newIsland = new Island(); // Creates a new island with random name and color
-//         world.addIsland(newIsland); // Adds the island to the world
-//     });
-// }); 
+// Get references to HTML buttons by their IDs
 const btnAddIsland = document.getElementById('btnAddIsland');
+const btnSaveIsland = document.getElementById('btnSave');
+const btnLoadIsland = document.getElementById('btnLoad');
 
+// Add a click event listener to the "Add Island" button
 btnAddIsland.addEventListener('click', () => {
-    world.addIsland();
-    console.log("test");
+    world.addIsland(); // Call the addIsland method of the World instance when the button is clicked
 });
 
+// Add a click event listener to the "Save" button
+btnSaveIsland.addEventListener('click', () => {
+    world.save(); // Call the save method of the World instance when the button is clicked
+    console.log("Islands saved!"); // Log a message to the console indicating that islands are saved
+});
 
-
-// import World from './classes/World.js';
-
-// const world = new World();
-
-// const btnAddIsland = document.getElementById('btnAddIsland');
-// const btnSave = document.getElementById('btnSave');
-// const btnLoad = document.getElementById('btnLoad');
-
-// btnAddIsland.addEventListener('click', () => {
-//   world.addIsland();
-//   console.log("test");
-// });
-
-// btnSave.addEventListener('click', () => {
-//   world.save();
-// });
-
-// btnLoad.addEventListener('click', () => {
-//   world.load();
-// })
+// Add a click event listener to the "Load" button
+btnLoadIsland.addEventListener('click', () => {
+    world.load(); // Call the load method of the World instance when the button is clicked
+    console.log("Islands loaded!"); // Log a message to the console indicating that islands are loaded
+});

@@ -1,70 +1,75 @@
+// Import the Island class from 'Island.js'
 import Island from './Island.js';
 
+// Define and export the World class
 export default class World {
   constructor() {
+    // Initialize the 'islands' array to store instances of the Island class
     this.islands = [];
-    this.hookEvents();
-    this.boundAddIslandOnce = this.addIslandOnce.bind(this); // Bind the function to the current instance
+
+    // Set up event listeners and bind functions to ensure the correct context ('this' value)
+    this.hookEvents(); // Initialize event listeners
+    this.boundAddIslandOnce = this.addIslandOnce.bind(this); // Bind the addIslandOnce function to the current instance
   }
 
+  // Method to set up event listeners
   hookEvents() {
+    // Get references to HTML buttons by their IDs
     const btnAddIsland = document.getElementById('btnAddIsland');
+    const btnSave = document.getElementById('btnSave');
+    const btnLoad = document.getElementById('btnLoad');
+
+    // Add a click event listener to the "Add Island" button
     btnAddIsland.addEventListener('click', this.boundAddIslandOnce);
 
-    const btnSave = document.getElementById('btnSave');
+    // Add a click event listener to the "Save" button
     btnSave.addEventListener('click', () => this.save());
 
-    const btnLoad = document.getElementById('btnLoad');
+    // Add a click event listener to the "Load" button
     btnLoad.addEventListener('click', () => this.load());
   }
 
+  // Method to add an island only once (remove and re-add click event listener)
   addIslandOnce() {
+    // Get the "Add Island" button
     const btnAddIsland = document.getElementById('btnAddIsland');
+
+    // Remove the click event listener temporarily to prevent multiple clicks
     btnAddIsland.removeEventListener('click', this.boundAddIslandOnce);
 
+    // Call the addIsland method to add a new island to the world
     this.addIsland();
 
+    // Re-add the click event listener after adding the island
     btnAddIsland.addEventListener('click', this.boundAddIslandOnce);
   }
 
+  // Method to save island data to local storage
   save() {
-    const savedIslands = this.islands.map(island => ({
-      name: island.name,
-      color: island.color, // Include the color property
-      position: {
-        x: island.islandElement.offsetLeft,
-        y: island.islandElement.offsetTop,
-      },
-    }));
+    // Map the islands array to an array of JSON representations of islands
+    const savedIslands = this.islands.map(island => island.toJSON());
 
+    // Convert the array to a JSON string
     const savedIslandsJSON = JSON.stringify(savedIslands);
-    localStorage.setItem('savedIslands', savedIslandsJSON);
 
-    console.log('Islands saved!');
+    // Save the JSON string to local storage with the key 'savedIslands'
+    localStorage.setItem('savedIslands', savedIslandsJSON);
   }
 
+  // Method to load island data from local storage
   load() {
+    // Retrieve the JSON string from local storage with the key 'savedIslands'
     const savedIslandsJSON = localStorage.getItem('savedIslands');
+
+    // Check if there are saved islands
     if (savedIslandsJSON) {
+      // Parse the JSON string to an array of saved island data
       const savedIslands = JSON.parse(savedIslandsJSON);
+
+      // Iterate through the saved islands and add or update them in the world
       savedIslands.forEach(savedIsland => {
-        const island = new Island(savedIsland.name);
-        island.color = savedIsland.color; // Set the color for the island
-        this.islands.push(island);
-
-        const islandElement = document.createElement('div');
-        islandElement.classList.add('island');
-        document.body.appendChild(islandElement);
-
-        islandElement.style.left = savedIsland.position.x + 'px';
-        islandElement.style.top = savedIsland.position.y + 'px';
-        islandElement.style.transform = `translate(${savedIsland.position.x}px, ${savedIsland.position.y}px)`;
-        islandElement.style.backgroundColor = island.color; // Set the saved color
-        islandElement.innerHTML = savedIsland.name;
-
-        islandElement.addEventListener('click', () => {
-          this.removeIsland(island, islandElement);
-        });
+        // Call the addIsland method with saved data (name, color, position)
+        this.addIsland(savedIsland.position, savedIsland.name, savedIsland.color);
       });
 
       console.log('Islands loaded!');
@@ -73,50 +78,54 @@ export default class World {
     }
   }
 
+  // Method to generate random coordinates within the screen boundaries
   getCoordinates() {
-    let randomSign = Math.random() < 0.5 ? -1 : 1;
-    // Ensure islands spawn inside the visible area of the screen
+    const maxX = window.innerWidth - 100; // Adjusted the maximum X value
+    const maxY = window.innerHeight - 50; // Adjusted the maximum Y value
+
     return {
-      x: Math.max(0, Math.min((Math.random() * window.innerWidth) / 2, window.innerWidth - 100)),
-      y: Math.max(0, Math.min((Math.random() * window.innerHeight) / 2, window.innerHeight - 50)),
+      x: Math.max(0, Math.min(Math.random() * maxX, maxX)),
+      y: Math.max(0, Math.min(Math.random() * maxY, maxY)),
     };
   }
 
-  addIsland() {
-    const island = new Island();
+  // Method to add an island to the world
+  addIsland(savedPosition, savedName, savedColor) {
+    // Create a new instance of the Island class with saved or random data
+    const island = new Island(savedName, savedColor, savedPosition || this.getCoordinates());
+
+    // Add the island to the 'islands' array
     this.islands.push(island);
 
+    // Create a new DOM element for the island
     const islandElement = document.createElement('div');
     islandElement.classList.add('island');
     document.body.appendChild(islandElement);
 
-    const coordinates = this.getCoordinates();
-    islandElement.style.left = coordinates.x + 'px';
-    islandElement.style.top = coordinates.y + 'px';
-    islandElement.style.transform = `translate(${coordinates.x}px, ${coordinates.y}px)`;
+    // Set the island's position, color, and name in the DOM
+    islandElement.style.left = island.position.x + 'px';
+    islandElement.style.top = island.position.y + 'px';
     islandElement.style.backgroundColor = island.color;
-    islandElement.innerHTML = island.getRandomName();
+    islandElement.innerHTML = island.name;
 
+    // Add a click event listener to the island for removal
     islandElement.addEventListener('click', () => {
       this.removeIsland(island, islandElement);
     });
 
+    // Attach the islandElement to the island instance for reference
     island.islandElement = islandElement;
 
     console.log('Island added!');
-
-    // Trigger the animation by moving the island to its random location
-    setTimeout(() => {
-      const randomCoordinates = this.getCoordinates();
-      this.moveIsland(island, randomCoordinates);
-    }, 100);
   }
 
+  // Method to remove an island with a fade-out animation
   removeIsland(island, islandElement) {
-    islandElement.style.transition = 'transform 0.3s ease-out'; // Set the transition properties
-    islandElement.style.transform = 'translateY(-20px)'; // Move the island slightly upward
+    // Apply a transform animation for a smooth removal effect
+    islandElement.style.transition = 'transform 0.3s ease-out';
+    islandElement.style.transform = 'translateY(-20px)';
 
-    // Remove the island after the animation completes
+    // Remove the island from the 'islands' array and the DOM after the animation
     setTimeout(() => {
       const index = this.islands.indexOf(island);
       if (index !== -1) {
@@ -127,15 +136,5 @@ export default class World {
 
       console.log('Island removed!');
     }, 300);
-  }
-
-  moveIsland(island, coordinates) {
-    island.islandElement.style.transition = 'transform 0.5s ease-in-out'; // Set the transition properties
-    island.islandElement.style.transform = `translate(${coordinates.x}px, ${coordinates.y}px)`; // Move the island to the new coordinates
-
-    // Remove the transition property after the animation completes
-    setTimeout(() => {
-      island.islandElement.style.transition = '';
-    }, 500);
   }
 }
